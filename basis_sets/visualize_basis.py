@@ -29,7 +29,7 @@ def get_exp_and_coeff(atom_name, basis_str):
     
 def plot_2d(basis_type, element, ao_name, exponents, coeff):
     plt.title(element + " " + ao_name)
-    x = np.linspace(0,5,200)
+    x = np.linspace(-5,5,400)
     total_ao = np.zeros_like(x)
     if basis_type == 'STO-nG':
         if ao_name[1] == 'S':
@@ -52,12 +52,61 @@ def plot_2d(basis_type, element, ao_name, exponents, coeff):
         pass
     plt.plot(x, total_ao)
     plt.show()
+
+def plot_3d(basis_type, element, ao_name, exponents, coeff):
+    from mpl_toolkits.mplot3d import Axes3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    coords = np.linspace(-4,4,15)
+    x_coords = np.tile(coords, len(coords) **2)
+    y_coords = np.repeat(np.tile(coords, len(coords)), len(coords))
+    z_coords = np.array([np.repeat(x, len(coords) ** 2.) for x in coords]).flatten()
+    plt.title(element + " " + ao_name)
+    total_ao = np.zeros_like(x_coords)
+    if basis_type == 'STO-nG':
+        if ao_name[1] == 'S':
+            for i in range(len(exponents)):
+                x = np.exp(-float(exponents[i]) * (x_coords ** 2.))
+                y = np.exp(-float(exponents[i]) * (y_coords ** 2.))
+                z = np.exp(-float(exponents[i]) * (z_coords ** 2.))
+                total_ao += (((2 * float(exponents[i]))/np.pi) ** (3./4.) * x * y * z * float(coeff[i]))
+        elif ao_name[1] == 'P':
+            for i in range(len(exponents)):
+                x = np.exp(-float(exponents[i]) * (x_coords ** 2.))
+                y = np.exp(-float(exponents[i]) * (y_coords ** 2.))
+                z = np.exp(-float(exponents[i]) * (z_coords ** 2.))
+                total_ao += (((128 * float(exponents[i])**5.)/np.pi**3.) ** (1./4.) * x_coords * x * y * z * float(coeff[i]))
+        elif ao_name[1] == 'D':
+            pass
+        else:
+            print ("UNKNOWN AO NAME")
+    elif basis_type == 'X-YZg':
+        pass
+    elif basis_type == 'cc':
+        pass
+   
+    
+    #colors = ['b' if x > 0 else 'r' for x in total_ao] 
+    alphas = total_ao
+    rgba_colors = np.zeros((len(total_ao), 4))
+    rgba_colors[:,0] = 1.0
+    rgba_colors[:, 3] = alphas
+    max_ao = np.amax(np.abs(total_ao))
+    for i in range(len(x_coords)):
+        if total_ao[i] < 0:
+            ao_color = 'blue'
+        else:
+            ao_color = 'red'
+        alpha_val = np.abs(total_ao[i] / max_ao)
+        ax.scatter(x_coords[i], y_coords[i], z_coords[i], alpha=alpha_val, color=ao_color)
+    plt.show()
  
 basis_str = ''
-with open('sto_2g.dat', 'r') as fin:
+with open('sto_6g.dat', 'r') as fin:
  basis_str = fin.read()
 
 basis_format = get_exp_and_coeff('C', basis_str)
+plot_3d('STO-nG', basis_format[2][0], basis_format[2][1], basis_format[2][2], basis_format[2][3])
 plot_2d('STO-nG', basis_format[0][0], basis_format[0][1], basis_format[0][2], basis_format[0][3])
 plot_2d('STO-nG', basis_format[1][0], basis_format[1][1], basis_format[1][2], basis_format[1][3])
 plot_2d('STO-nG', basis_format[2][0], basis_format[2][1], basis_format[2][2], basis_format[2][3])
