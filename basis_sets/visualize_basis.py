@@ -77,7 +77,11 @@ def plot_3d(basis_type, element, ao_name, exponents, coeff):
                 z = np.exp(-float(exponents[i]) * (z_coords ** 2.))
                 total_ao += (((128 * float(exponents[i])**5.)/np.pi**3.) ** (1./4.) * x_coords * x * y * z * float(coeff[i]))
         elif ao_name[1] == 'D':
-            pass
+            for i in range(len(exponents)):
+                x = np.exp(-float(exponents[i]) * (x_coords ** 2.))
+                y = np.exp(-float(exponents[i]) * (y_coords ** 2.))
+                z = np.exp(-float(exponents[i]) * (z_coords ** 2.))
+                total_ao += (((2048 * float(exponents[i])**7.)/np.pi**3.) ** (1./4.) * x_coords * y_coords * x * y * z * float(coeff[i]))
         else:
             print ("UNKNOWN AO NAME")
     elif basis_type == 'X-YZg':
@@ -105,8 +109,8 @@ basis_str = ''
 with open('sto_6g.dat', 'r') as fin:
  basis_str = fin.read()
 
-basis_format = get_exp_and_coeff('C', basis_str)
-plot_3d('STO-nG', basis_format[2][0], basis_format[2][1], basis_format[2][2], basis_format[2][3])
+basis_format = get_exp_and_coeff('Fe', basis_str)
+plot_3d('STO-nG', basis_format[-1][0], basis_format[-1][1], basis_format[-1][2], basis_format[-1][3])
 plot_2d('STO-nG', basis_format[0][0], basis_format[0][1], basis_format[0][2], basis_format[0][3])
 plot_2d('STO-nG', basis_format[1][0], basis_format[1][1], basis_format[1][2], basis_format[1][3])
 plot_2d('STO-nG', basis_format[2][0], basis_format[2][1], basis_format[2][2], basis_format[2][3])
