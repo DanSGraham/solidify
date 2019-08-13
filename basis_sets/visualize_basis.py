@@ -57,7 +57,7 @@ def plot_3d(basis_type, element, ao_name, exponents, coeff):
     from mpl_toolkits.mplot3d import Axes3D
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    coords = np.linspace(-4,4,15)
+    coords = np.linspace(-3,3,8)
     x_coords = np.tile(coords, len(coords) **2)
     y_coords = np.repeat(np.tile(coords, len(coords)), len(coords))
     z_coords = np.array([np.repeat(x, len(coords) ** 2.) for x in coords]).flatten()
