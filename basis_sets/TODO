@@ -1,3 +1,8 @@
+#Get labels working properly.
+#Add support for p, d, and f
+#Add y and z perspectives
+#Ditto for 2d graphs
+#Ditto for 3d graphs
 #Speed up the 3d Vis
 #Add Pople basis sets
 #Add dunning basis sets

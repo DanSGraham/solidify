@@ -3,6 +3,7 @@ import numpy as np
 import re
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
+import random
 
 #Gaussian basis sets.
 
@@ -57,19 +58,31 @@ def plot_3d(basis_type, element, ao_name, exponents, coeff):
     from mpl_toolkits.mplot3d import Axes3D
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    coords = np.linspace(-3,3,8)
-    x_coords = np.tile(coords, len(coords) **2)
-    y_coords = np.repeat(np.tile(coords, len(coords)), len(coords))
-    z_coords = np.array([np.repeat(x, len(coords) ** 2.) for x in coords]).flatten()
+    x_coords = []
+    y_coords = []
+    z_coords = []
+    total_ao = []
     plt.title(element + " " + ao_name)
-    total_ao = np.zeros_like(x_coords)
+    num_points = 500
+    min_prob = 0
     if basis_type == 'STO-nG':
         if ao_name[1] == 'S':
-            for i in range(len(exponents)):
-                x = np.exp(-float(exponents[i]) * (x_coords ** 2.))
-                y = np.exp(-float(exponents[i]) * (y_coords ** 2.))
-                z = np.exp(-float(exponents[i]) * (z_coords ** 2.))
-                total_ao += (((2 * float(exponents[i]))/np.pi) ** (3./4.) * x * y * z * float(coeff[i]))
+            while len(total_ao) < num_points:
+                g_x_coord = random.uniform(-1,1)
+                g_y_coord = random.uniform(-1,1)
+                g_z_coord = random.uniform(-1,1)
+                ao_val = 0
+                for i in range(len(exponents)):
+                    x = np.exp(-float(exponents[i]) * (g_x_coord ** 2.))
+                    y = np.exp(-float(exponents[i]) * (g_y_coord ** 2.))
+                    z = np.exp(-float(exponents[i]) * (g_z_coord ** 2.))
+                    ao_val += (((2 * float(exponents[i]))/np.pi) ** (3./4.) * x * y * z * float(coeff[i]))
+                if np.abs(ao_val) > min_prob:
+                    x_coords.append(g_x_coord)
+                    y_coords.append(g_y_coord)
+                    z_coords.append(g_z_coord)
+                    total_ao.append(ao_val)
+
         elif ao_name[1] == 'P':
             for i in range(len(exponents)):
                 x = np.exp(-float(exponents[i]) * (x_coords ** 2.))
@@ -109,9 +122,9 @@ basis_str = ''
 with open('sto_6g.dat', 'r') as fin:
  basis_str = fin.read()
 
-basis_format = get_exp_and_coeff('Fe', basis_str)
-plot_3d('STO-nG', basis_format[-1][0], basis_format[-1][1], basis_format[-1][2], basis_format[-1][3])
-plot_2d('STO-nG', basis_format[0][0], basis_format[0][1], basis_format[0][2], basis_format[0][3])
+basis_format = get_exp_and_coeff('C', basis_str)
+#plot_3d('STO-nG', basis_format[-1][0], basis_format[-1][1], basis_format[-1][2], basis_format[-1][3])
+plot_3d('STO-nG', basis_format[0][0], basis_format[0][1], basis_format[0][2], basis_format[0][3])
 plot_2d('STO-nG', basis_format[1][0], basis_format[1][1], basis_format[1][2], basis_format[1][3])
 plot_2d('STO-nG', basis_format[2][0], basis_format[2][1], basis_format[2][2], basis_format[2][3])
 #for basis in basis_format:
